@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, Character, Planet
+from models import db, User, Character, Planet, FavoriteCharacter
 #from models import Person
 
 app = Flask(__name__)
@@ -43,11 +43,13 @@ def get_user():
     user_list = [userData.serialize() for userData in User]
     return jsonify(user_list), 200
 
+@app.route('/character', methods=['GET'])
 def get_character():
     Character = Character.query.all()
     character_list = [characterData.serialize() for characterData in Character]
     return jsonify(character_list), 200
 
+@app.route('/planet', methods=['GET'])
 def get_planet():
     Planet = Planet.query.all()
     planet_list = [planetData.serialize() for planetData in Planet]
@@ -72,3 +74,54 @@ def post_user():
     db.session.commit()
     return jsonify(new_user.serialize()), 200
 # ,serialize converts the info into a json-type object
+
+
+@app.route('/character', methods=['POST'])
+def post_character():
+    data = request.json
+    new_character= Character(
+        # id = data["id"],
+        name = data["name"],
+        age = data["age"],
+        species= data["species"],
+        title = data["title"]
+        
+    )
+    db.session.add(new_character)
+    db.session.commit()
+    return jsonify(new_character.serialize()), 200
+
+@app.route('/planet', methods=['POST'])
+def post_planet():
+    data = request.json
+    new_planet= Planet(
+        # id = data["id"],
+        name = data["name"],
+        population= data["population"],
+        age= data["age"],
+        landscape= data["landscape"]
+        
+    )
+    db.session.add(new_planet)
+    db.session.commit()
+    return jsonify(new_planet.serialize()), 200
+
+@app.route('/fav_character', methods=['POST'])
+def post_fav_char():
+    data = request.json
+    new_fav = FavoriteCharacter(
+        # id = data["id"],
+        user_id = data["user_id"],
+        character_id = data["character_id"],
+        planet_id = data["planet_id"]
+    )
+   
+    db.session.add(new_fav)
+    db.session.commit()
+    return jsonify(new_fav.serialize()), 200
+
+@app.route('/fav-char', methods=['GET'])
+def get_fav_character():
+    FavoriteCharacter = FavoriteCharacter.query.all()
+    fav_character_list = [favData.serialize() for favData in fav_character_list]
+    return jsonify(fav_character_list), 200
