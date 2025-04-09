@@ -43,12 +43,22 @@ def get_user():
     user_list = [userData.serialize() for userData in User]
     return jsonify(user_list), 200
 
+# Get method for character
 @app.route('/character', methods=['GET'])
 def get_character():
     Character = Character.query.all()
     character_list = [characterData.serialize() for characterData in Character]
     return jsonify(character_list), 200
 
+# Get request for single character
+@app.route('/character/<int:character_id>', methods=['GET'])
+def get_single_character(character_id): 
+                # User.query.filter_by(id=user_id).one_or_none()
+    character = Character.query.filter_by(id=character_id).first()
+ 
+    return jsonify(character.serialize()), 200
+
+# Get method for planet
 @app.route('/planet', methods=['GET'])
 def get_planet():
     Planet = Planet.query.all()
@@ -60,7 +70,7 @@ if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3000))
     app.run(host='0.0.0.0', port=PORT, debug=False)
 
-
+# Post method for user
 @app.route('/user', methods=['POST'])
 def post_user():
     data = request.json
@@ -76,6 +86,7 @@ def post_user():
 # ,serialize converts the info into a json-type object
 
 
+# POST method for charcater
 @app.route('/character', methods=['POST'])
 def post_character():
     data = request.json
@@ -84,12 +95,12 @@ def post_character():
         name = data["name"],
         age = data["age"],
         species= data["species"],
-        title = data["title"]
-        
+        title = data["title"]    
     )
     db.session.add(new_character)
     db.session.commit()
     return jsonify(new_character.serialize()), 200
+
 
 @app.route('/planet', methods=['POST'])
 def post_planet():
@@ -125,3 +136,19 @@ def get_fav_character():
     FavoriteCharacter = FavoriteCharacter.query.all()
     fav_character_list = [favData.serialize() for favData in fav_character_list]
     return jsonify(fav_character_list), 200
+
+@app.route('/fav_planet', methods=['POST'])
+def post_fav_planet():
+    data = request.json
+    new_fav_planet = FavoriteCharacter(
+        # id = data["id"],
+        user_id = data["user_id"],
+        character_id = data["character_id"],
+        planet_id = data["planet_id"]
+    )
+   
+    db.session.add(new_fav_planet)
+    db.session.commit()
+    return jsonify(new_fav_planet.serialize()), 200
+
+# need to do get fav_planet
