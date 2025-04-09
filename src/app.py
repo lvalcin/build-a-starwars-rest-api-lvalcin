@@ -58,6 +58,14 @@ def get_single_character(character_id):
  
     return jsonify(character.serialize()), 200
 
+# Get request for single planet
+@app.route('/planet/<int:planet_id>', methods=['GET'])
+def get_single_planet(planet_id): 
+                # User.query.filter_by(id=user_id).one_or_none()
+    planet = Planet.query.filter_by(id=planet_id).first()
+ 
+    return jsonify(planet.serialize()), 200
+
 # Get method for planet
 @app.route('/planet', methods=['GET'])
 def get_planet():
@@ -101,7 +109,7 @@ def post_character():
     db.session.commit()
     return jsonify(new_character.serialize()), 200
 
-
+# POST method for planet
 @app.route('/planet', methods=['POST'])
 def post_planet():
     data = request.json
