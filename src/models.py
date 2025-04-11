@@ -73,17 +73,14 @@ class FavoriteCharacter(db.Model):
 class FavoritePlanet(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
-    character_id: Mapped[int] = mapped_column(ForeignKey("character.id"))
     planet_id: Mapped[int] = mapped_column(ForeignKey("planet.id"))
     user: Mapped["User"]=relationship("User")
-    character: Mapped["Character"]=relationship("Character")
     planet: Mapped["Planet"]=relationship("Planet")
 
     def serialize(self):
         return {
             "id": self.id,
             "user": self.user.email,
-            "character": self.character.name,
             "planet": self.planet.name
             # do not serialize the password, its a security breach
         }

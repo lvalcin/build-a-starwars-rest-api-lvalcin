@@ -152,10 +152,10 @@ def get_fav_character():
 def post_fav_planet():
     data = request.json
     new_fav_planet = FavoritePlanet(
-        # id = data["id"],
+    
         user_id = data["user_id"],
         planet_id = data["planet_id"]
-        # character_id = data["character_id"],
+      
     )
    
     db.session.add(new_fav_planet)
@@ -165,19 +165,19 @@ def post_fav_planet():
 # GET REQUEST FOR fav_planet
 @app.route('/fav_planet', methods=['GET'])
 def get_fav_planet():
-    FavoritePlanet = FavoritePlanet.query.all()
-    fav_planet_list = [favData.serialize() for favData in fav_planet_list]
+    all_fav_planet = FavoritePlanet.query.all()
+    fav_planet_list = [favData.serialize() for favData in all_fav_planet ]
     return jsonify(fav_planet_list), 200
 
 
 @app.route('/fav_planet/<int:fav_planet_id>', methods=['DELETE'])
 def delete_planet(fav_planet_id):
     planet = FavoritePlanet.query.get(fav_planet_id)
-    planet_json=planet.serialize
+    planet_json=planet.serialize()
     db.session.delete(planet)
     db.session.commit()
     response = {"message": "FAVORITE DELETED",
-                "planet": planet_json()
+                "planet": planet_json
                 }
     return jsonify(response), 200
 
