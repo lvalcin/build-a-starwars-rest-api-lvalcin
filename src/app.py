@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, Character, Planet, FavoriteCharacter
+from models import db, User, Character, Planet, FavoriteCharacter,FavoritePlanet
 #from models import Person
 
 app = Flask(__name__)
@@ -125,38 +125,69 @@ def post_planet():
     db.session.commit()
     return jsonify(new_planet.serialize()), 200
 
+
+# POST REQUEST FOR FAV CHAR
 @app.route('/fav_character', methods=['POST'])
 def post_fav_char():
     data = request.json
     new_fav = FavoriteCharacter(
-        # id = data["id"],
+      
         user_id = data["user_id"],
-        character_id = data["character_id"],
-        planet_id = data["planet_id"]
+        character_id = data["character_id"]
+    
     )
-   
     db.session.add(new_fav)
     db.session.commit()
     return jsonify(new_fav.serialize()), 200
 
-@app.route('/fav-char', methods=['GET'])
+# GET REQUEST FOR FAV CHAR
+@app.route('/fav_char', methods=['GET'])
 def get_fav_character():
-    FavoriteCharacter = FavoriteCharacter.query.all()
-    fav_character_list = [favData.serialize() for favData in fav_character_list]
+    all_fav = FavoriteCharacter.query.all()
+    fav_character_list = [favData.serialize() for favData in all_fav ]
     return jsonify(fav_character_list), 200
 
+# POST REQUEST FOR FAV PLANET
 @app.route('/fav_planet', methods=['POST'])
 def post_fav_planet():
     data = request.json
-    new_fav_planet = FavoriteCharacter(
+    new_fav_planet = FavoritePlanet(
         # id = data["id"],
         user_id = data["user_id"],
-        character_id = data["character_id"],
         planet_id = data["planet_id"]
+        # character_id = data["character_id"],
     )
    
     db.session.add(new_fav_planet)
     db.session.commit()
     return jsonify(new_fav_planet.serialize()), 200
 
-# need to do get fav_planet
+# GET REQUEST FOR fav_planet
+@app.route('/fav_planet', methods=['GET'])
+def get_fav_planet():
+    FavoritePlanet = FavoritePlanet.query.all()
+    fav_planet_list = [favData.serialize() for favData in fav_planet_list]
+    return jsonify(fav_planet_list), 200
+
+
+@app.route('/fav_planet/<int:fav_planet_id>', methods=['DELETE'])
+def delete_planet(fav_planet_id):
+    planet = FavoritePlanet.query.get(fav_planet_id)
+    planet_json=planet.serialize
+    db.session.delete(planet)
+    db.session.commit()
+    response = {"message": "FAVORITE DELETED",
+                "planet": planet_json()
+                }
+    return jsonify(response), 200
+
+@app.route('/fav_character/<int:fav_character_id>', methods=['DELETE'])
+def delete_character(fav_character_id):
+    character = FavoriteCharacter.query.get(fav_character_id)
+    character_json=character.serialize()
+    db.session.delete(character)
+    db.session.commit()
+    response = {"message": "FAVORITE DELETED",
+                "planet": character_json
+                }
+    return jsonify(response), 200
