@@ -38,16 +38,16 @@ def sitemap():
 
 @app.route('/user', methods=['GET'])
 def get_user():
-    User = User.query.all()
+    user = User.query.all()
     # after 'in' is always the list you are looping through, it is being saved in the variable userData in this case
-    user_list = [userData.serialize() for userData in User]
+    user_list = [userData.serialize() for userData in user]
     return jsonify(user_list), 200
 
 # Get method for character
 @app.route('/character', methods=['GET'])
 def get_character():
-    Character = Character.query.all()
-    character_list = [characterData.serialize() for characterData in Character]
+    character = Character.query.all()
+    character_list = [characterData.serialize() for characterData in character]
     return jsonify(character_list), 200
 
 # Get request for single character
@@ -55,6 +55,8 @@ def get_character():
 def get_single_character(character_id): 
                 # User.query.filter_by(id=user_id).one_or_none()
     character = Character.query.filter_by(id=character_id).first()
+    if not character:
+        return jsonify({"error": "Character not found"}),404
  
     return jsonify(character.serialize()), 200
 
@@ -63,14 +65,16 @@ def get_single_character(character_id):
 def get_single_planet(planet_id): 
                 # User.query.filter_by(id=user_id).one_or_none()
     planet = Planet.query.filter_by(id=planet_id).first()
+    if not planet:
+        return jsonify({"error": "Planet not found"}),404
  
     return jsonify(planet.serialize()), 200
 
 # Get method for planet
 @app.route('/planet', methods=['GET'])
 def get_planet():
-    Planet = Planet.query.all()
-    planet_list = [planetData.serialize() for planetData in Planet]
+    planet = Planet.query.all()
+    planet_list = [planetData.serialize() for planetData in planet]
     return jsonify(planet_list), 200
 
 # this only runs if `$ python src/app.py` is executed
